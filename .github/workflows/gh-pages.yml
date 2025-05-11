@@ -1,35 +1,26 @@
-# .github/workflows/gh-pages.yml
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-
-permissions:
-  contents: read
-  pages: write
+    branches:
+      - main
 
 jobs:
-  build_and_deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout with full history
-      - name: Checkout repository
+      # 1) Checkout the ENTIRE repo (full history needed to update gh-pages)
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2) (Optional) build step goes here if you need it
-      # - name: Build site
-      #   run: npm ci && npm run build
-
-      # 3) Upload the **public/** folder as a Pages artifact
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: public
-
-      # 4) Deploy that artifact to GitHub Pages
+      # 2) Deploy the public/ folder to the gh-pages branch
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # Uses the built-in GITHUB_TOKEN so no extra secrets required
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Folder containing your static site
+          publish_dir: public
