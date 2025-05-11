@@ -1,3 +1,4 @@
+# .github/workflows/gh-pages.yml
 name: Deploy to GitHub Pages
 
 on:
@@ -5,36 +6,34 @@ on:
     branches:
       - main
 
-# Grant only the permissions we need
 permissions:
-  contents: read    # for actions/checkout
+  contents: read    # for checkout
   pages: write      # to publish
-  id-token: write   # not strictly needed here
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout your repo with full history
+      # 1) Checkout your repo
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2️⃣ (Optional) If you had a build step, do it here.
-      #    E.g. npm ci && npm run build → outputs into ./public
+      # 2) (Optional) Build step if you have one,
+      #    outputting into ./public
       # - name: Build site
       #   run: |
       #     npm ci
       #     npm run build
 
-      # 3️⃣ Upload the static files as a Pages “artifact”
+      # 3) Upload the contents of public/ as a GitHub Pages artifact
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
           path: public
 
-      # 4️⃣ Deploy that artifact to GitHub Pages
+      # 4) Deploy that artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
