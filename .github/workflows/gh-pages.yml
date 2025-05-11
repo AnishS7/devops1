@@ -1,3 +1,4 @@
+# .github/workflows/gh-pages.yml
 name: Deploy to GitHub Pages
 
 on:
@@ -5,24 +6,36 @@ on:
     branches:
       - main
 
+# Grant only the permissions this job needs
+permissions:
+  contents: read       # for checkout
+  pages: write         # to publish
+  id-token: write      # if you ever need OIDC
+
 jobs:
   deploy:
+    # Ensure only one run at a time
+    concurrency:
+      group: 'pages'
+      cancel-in-progress: true
     runs-on: ubuntu-latest
 
     steps:
+      # 1) Checkout full history so we can update gh-pages
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0              # fetch full history
-          persist-credentials: true   # keep the GITHUB_TOKEN in the remote
+          fetch-depth: 0
 
+      # 2) (Optional) Run any build here; if you only have static files in public/ you can skip
+      # - name: Build site
+      #   run: |
+      #     npm ci
+      #     npm run build
+
+      # 3) Deploy to GH-Pages using the official action
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: actions/deploy-pages@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: public
-          publish_branch: gh-pages
-          force_orphan: true          # create gh-pages as a fresh orphan branch
-          allow_empty_commit: true    # push even if no changes detected
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
+          branch: gh-pages       # the branch to publish
+          folder: public         # directory containing your built site
