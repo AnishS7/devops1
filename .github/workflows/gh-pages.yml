@@ -1,4 +1,3 @@
-# .github/workflows/gh-pages.yml
 name: Deploy to GitHub Pages
 
 on:
@@ -11,23 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repo with full history so we can update gh-pages
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0            # full history needed for branch updates
-          # — do NOT disable persist-credentials; leave it so the HTTPS token is injected
+          fetch-depth: 0              # fetch full history
+          persist-credentials: true   # keep the GITHUB_TOKEN in the remote
 
-      # 2. (Optional) Build step if you had one
-      # - name: Build site
-      #   run: npm ci && npm run build
-
-      # 3. Deploy public/ to the gh-pages branch over HTTPS
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # uses the injected HTTPS remote
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public
           publish_branch: gh-pages
+          force_orphan: true          # create gh-pages as a fresh orphan branch
+          allow_empty_commit: true    # push even if no changes detected
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
