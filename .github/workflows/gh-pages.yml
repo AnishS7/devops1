@@ -1,26 +1,33 @@
+# .github/workflows/gh-pages.yml
 name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository (full history)
+      # 1. Checkout the repo with full history so we can update gh-pages
+      - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-          persist-credentials: false   # disable SSH auth
+          fetch-depth: 0            # full history needed for branch updates
+          # — do NOT disable persist-credentials; leave it so the HTTPS token is injected
 
+      # 2. (Optional) Build step if you had one
+      # - name: Build site
+      #   run: npm ci && npm run build
+
+      # 3. Deploy public/ to the gh-pages branch over HTTPS
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          # Force HTTPS push URL so GITHUB_TOKEN works
-          remote_url: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # uses the injected HTTPS remote
           publish_dir: public
+          publish_branch: gh-pages
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
