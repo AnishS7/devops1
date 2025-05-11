@@ -1,37 +1,26 @@
 name: Deploy to GitHub Pages
 
-# Run on every push to main
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repo, fetch full history, **and** disable
-      #    credentials persistence so the Pages action can push.
-      - name: Checkout repository
+      - name: Checkout repository (full history)
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0            # full history required for gh-pages
-          persist-credentials: false  # don’t overwrite the token
+          fetch-depth: 0
+          persist-credentials: false   # disable SSH auth
 
-      # 2. (Optional) if you have a build step (npm/webpack/etc), run it here.
-      #    For plain HTML/CSS you can skip this step.
-      #- name: Build site
-      #  run: |
-      #    npm ci
-      #    npm run build
-
-      # 3. Deploy the contents of public/ to gh-pages branch
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: public
+          # Force HTTPS push URL so GITHUB_TOKEN works
+          remote_url: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           publish_branch: gh-pages
+          publish_dir: public
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
