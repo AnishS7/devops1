@@ -3,32 +3,28 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 permissions:
-  contents: read    # for checkout
-  pages: write      # to publish
+  contents: read
+  pages: write
 
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout your repo
+      # 1) Checkout with full history
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2) (Optional) Build step if you have one,
-      #    outputting into ./public
+      # 2) (Optional) build step goes here if you need it
       # - name: Build site
-      #   run: |
-      #     npm ci
-      #     npm run build
+      #   run: npm ci && npm run build
 
-      # 3) Upload the contents of public/ as a GitHub Pages artifact
+      # 3) Upload the **public/** folder as a Pages artifact
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
